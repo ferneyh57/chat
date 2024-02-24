@@ -20,4 +20,8 @@ class FirebaseAuthDataSource {
       password: password,
     );
   }
+
+  User? getCurrentAuthUser() {
+    return FirebaseAuth.instance.currentUser;
+  }
 }
