@@ -13,4 +13,14 @@ class FireStoreDataSource {
     await _userCollection.doc(uid).set(user.toJson());
     return user;
   }
+
+  Stream<List<ChatUser>> getMessages({int limit = 10, DocumentSnapshot? startAfter}) {
+    Query query = _userCollection.orderBy('lastSeen', descending: true).limit(limit);
+    if (startAfter != null) {
+      query = query.startAfterDocument(startAfter);
+    }
+    return query.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => ChatUser.fromJson(doc.data()! as Map<String, dynamic>)).toList();
+    });
+  }
 }
