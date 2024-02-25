@@ -6,11 +6,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AuthRepository {
-  final FirebaseAuthDataSource firebaseAuthDataSource;
-  final FireStoreDataSource fireStoreDataSource;
+  final AuthDataSource authDataSource;
+  final UserDataSource userDataSource;
   AuthRepository({
-    required this.firebaseAuthDataSource,
-    required this.fireStoreDataSource,
+    required this.authDataSource,
+    required this.userDataSource,
   });
 
   Future<(String?, ChatUser?)> login({
@@ -18,9 +18,8 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      final authResponse =
-          await firebaseAuthDataSource.signInWithEmailPassword(email: email, password: password);
-      final firestoreResponse = await fireStoreDataSource.getChatUser(authResponse.user?.uid ?? '');
+      final authResponse = await authDataSource.signInWithEmailPassword(email: email, password: password);
+      final firestoreResponse = await userDataSource.getByUid(authResponse.user?.uid ?? '');
       if (firestoreResponse == null) return ('We can not find your user', null);
       return (null, firestoreResponse);
     } on FirebaseAuthException catch (e) {
@@ -38,9 +37,9 @@ class AuthRepository {
   }) async {
     try {
       final authResponse =
-          await firebaseAuthDataSource.createUserWithEmailAndPassword(email: email, password: password);
+          await authDataSource.createUserWithEmailAndPassword(email: email, password: password);
       final user = authResponse.user;
-      final firestoreResponse = await fireStoreDataSource.saveChatUser(
+      final firestoreResponse = await userDataSource.create(
         user?.uid ?? '',
         ChatUser(
           userName: user?.displayName,

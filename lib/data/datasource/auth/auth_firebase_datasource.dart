@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
-class FirebaseAuthDataSource {
+class AuthDataSource {
   Future<UserCredential> signInWithEmailPassword({
     required String email,
     required String password,
