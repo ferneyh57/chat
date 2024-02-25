@@ -21,7 +21,7 @@ class AuthDataSource {
     );
   }
 
-  User? getCurrentAuthUser() {
-    return FirebaseAuth.instance.currentUser;
-  }
+  User? getCurrentAuthUser() => FirebaseAuth.instance.currentUser;
+  Stream<User?> getUserStatus() => FirebaseAuth.instance.authStateChanges();
+  Future<void> logout() => FirebaseAuth.instance.signOut();
 }

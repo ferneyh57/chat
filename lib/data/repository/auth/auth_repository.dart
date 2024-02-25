@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:chat/data/datasource/auth/auth_firebase_datasource.dart';
+import 'package:chat/data/datasource/auth/auth_datasource.dart';
 import 'package:chat/data/datasource/user/user_datasource.dart';
 import 'package:chat/data/model/chat_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,7 +23,7 @@ class AuthRepository {
       if (firestoreResponse == null) return ('We can not find your user', null);
       return (null, firestoreResponse);
     } on FirebaseAuthException catch (e) {
-      debugPrint('error at AuthRepository FirebaseAuthException: $e');
+      debugPrint('error at AuthRepository FirebaseAuthException: ${e.code}');
       return (e.message, null);
     } catch (e) {
       debugPrint('error at AuthRepository: $e');
@@ -57,4 +57,9 @@ class AuthRepository {
       return ('We can not find your user', null);
     }
   }
+
+  Future<void> logout() => authDataSource.logout();
+
+  User? getCurrentAuthUser() => authDataSource.getCurrentAuthUser();
+  Stream<User?> getUserStatus() => authDataSource.getUserStatus();
 }
