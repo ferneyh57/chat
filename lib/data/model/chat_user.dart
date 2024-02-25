@@ -8,12 +8,23 @@ class ChatUser {
   final int? lastSeen;
   final String? email;
   final String? uid;
+  final UserStatus? status;
   ChatUser({
     this.userName,
     this.lastSeen,
     this.email,
     this.uid,
+    this.status,
   });
   factory ChatUser.fromJson(Map<String, dynamic> json) => _$ChatUserFromJson(json);
   Map<String, dynamic> toJson() => _$ChatUserToJson(this);
+}
+
+enum UserStatus {
+  online('online'),
+  away('away'),
+  offline('offline');
+
+  const UserStatus(this.value);
+  final String value;
 }
