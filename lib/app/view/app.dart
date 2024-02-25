@@ -1,5 +1,5 @@
+import 'package:chat/home/view/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:chat/counter/counter.dart';
 import 'package:chat/l10n/l10n.dart';
 
 class App extends StatelessWidget {
@@ -9,14 +9,14 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blueAccent,
+          brightness: Brightness.dark,
         ),
-        useMaterial3: true,
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const CounterPage(),
+      home: const SplashPage(),
     );
   }
 }
