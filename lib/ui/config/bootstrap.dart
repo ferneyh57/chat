@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:chat/firebase_options.dart';
-import 'package:chat/injector.dart';
+import 'package:chat/ui/config/firebase_options.dart';
+import 'package:chat/ui/config/injector.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';

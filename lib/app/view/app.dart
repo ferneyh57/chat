@@ -1,4 +1,4 @@
-import 'package:chat/home/view/home_page.dart';
+import 'package:chat/ui/pages/home/view/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:chat/l10n/l10n.dart';
 
