@@ -20,7 +20,7 @@ dependencies:
   get_it: ^7.6.7
   intl: any
   isar: ^3.1.0+1
-  uuid: ^4.2.2
+  uuid: ^4.3.3
 
 dev_dependencies:
   bloc_test: ^9.1.4
