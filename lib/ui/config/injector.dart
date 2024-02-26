@@ -1,4 +1,5 @@
 import 'package:chat/data/datasource/datasource.dart';
+import 'package:chat/data/repository/message/message_repository.dart';
 import 'package:chat/data/repository/user/user_repository.dart';
 import 'package:chat/ui/pages/auth/cubit/auth_cubit.dart';
 import 'package:get_it/get_it.dart';
@@ -17,7 +18,11 @@ void setupLocator() {
       authDataSource: GetIt.I<AuthDataSource>(),
     ),
   );
-
+  GetIt.I.registerLazySingleton(
+    () => MessageRepository(
+      messageDataSource: GetIt.I<MessageDataSource>(),
+    ),
+  );
   GetIt.I.registerLazySingleton(
     () => UserRepository(
       userDataSource: GetIt.I<UserDataSource>(),

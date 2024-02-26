@@ -1,14 +1,22 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:chat/data/datasource/user/user_datasource.dart';
+import 'package:chat/data/model/message.dart';
+import 'package:chat/data/repository/message/message_repository.dart';
+import 'package:chat/ui/pages/chat/view/chat_page.dart';
+import 'package:chat/ui/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:chat/data/model/chat_user.dart';
+import 'package:get_it/get_it.dart';
+import 'package:uuid/uuid.dart';
 
 class UserWidget extends StatefulWidget {
   final Stream<FirebaseDocumentHelper<List<ChatUser>>> Function(DocumentSnapshot? doc) getUsers;
+  final String currentUserId;
   const UserWidget({
     super.key,
     required this.getUsers,
+    required this.currentUserId,
   });
 
   @override
@@ -27,7 +35,7 @@ class _UserWidgetState extends State<UserWidget> {
 
   Future<void> _loadMoreData() async {
     final moreUsers = await widget.getUsers(_lastDocument).first;
-    if (moreUsers.data.isNotEmpty) {
+    if (true == moreUsers.data?.isNotEmpty) {
       setState(() {
         _lastDocument = moreUsers.snapshot;
       });
@@ -41,34 +49,61 @@ class _UserWidgetState extends State<UserWidget> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          final users = snapshot.data?.data;
-          return ListView.builder(
-            itemCount: users!.length + 1,
-            itemBuilder: (context, index) {
-              if (index < users.length) {
-                final user = users[index];
-                return ListTile(
-                  title: Text(user.email ?? ''),
-                  subtitle: Text(user.lastSeen.toString()),
-                  onTap: () {},
-                );
-              } else {
-                if (index == users.length && users.length % 10 == 0) {
-                  _loadMoreData();
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  // Si hemos cargado todos los datos disponibles.
-                  return SizedBox();
-                }
-              }
-            },
-          );
         }
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+        final users = snapshot.data?.data;
+        return ListView.builder(
+          itemCount: users?.where((user) => user.uid != widget.currentUserId).length ?? 0,
+          itemBuilder: (context, index) {
+            final user = users?.where((user) => user.uid != widget.currentUserId).toList()[index];
+            return ListTile(
+              title: Text(user?.email ?? ''),
+              subtitle: Text(user?.lastSeen.toString() ?? ''),
+              leading: Icon(
+                Icons.circle,
+                color: user?.status?.color,
+              ),
+              onTap: () {
+                final messageRepo = GetIt.I<MessageRepository>();
+                final conversationId = getConversationId(widget.currentUserId, user?.uid ?? '');
+                final uuid = Uuid();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (context) => ChatPage(
+                      receiverEmail: user?.email ?? '',
+                      currentUserId: widget.currentUserId,
+                      getMessages: (doc) {
+                        return messageRepo.getAll(
+                          conversationId: conversationId,
+                          startAfter: doc,
+                        );
+                      },
+                      onSendMessage: (content) async {
+                        final message = Message(
+                          senderId: widget.currentUserId,
+                          receiverId: user?.uid ?? '',
+                          content: content,
+                          date: DateTime.now().millisecondsSinceEpoch,
+                          conversationId: conversationId,
+                          uid: uuid.v4(),
+                        );
+                        final (error, _) = await messageRepo.create(
+                          message,
+                          conversationId,
+                        );
+
+                        return error;
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
       },
     );
   }

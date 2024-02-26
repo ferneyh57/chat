@@ -1,3 +1,4 @@
+import 'package:chat/data/repository/repository.dart';
 import 'package:chat/data/repository/user/user_repository.dart';
 import 'package:chat/ui/pages/auth/cubit/auth_cubit.dart';
 import 'package:chat/ui/pages/home/view/available_users_widget.dart';
@@ -51,6 +52,7 @@ class _HomePageState extends State<HomePage> {
             getUsers: (doc) {
               return GetIt.I<UserRepository>().getAll(startAfter: doc);
             },
+            currentUserId: GetIt.I<AuthRepository>().getCurrentAuthUser()?.uid ?? '',
           );
         },
       ),

@@ -55,7 +55,63 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  Future<void> onLogin() async {}
-  Future<void> onRegister() async {}
+  void sendError(String error) {
+    emit(
+      state.copyWith(
+        error: error,
+        loading: false,
+      ),
+    );
+  }
+
+  Future<String?> onLogin({
+    required String email,
+    required String password,
+  }) async {
+    final (authError, user) = await authRepository.login(email: email, password: password);
+    if (authError != null) {
+      return authError;
+    }
+    final (getUserError, chatUser) = await userRepository.getByUid(user?.uid ?? '');
+    if (getUserError != null) {
+      return getUserError;
+    }
+    emit(
+      state.copyWith(
+        chatUser: chatUser,
+        loading: false,
+      ),
+    );
+    return null;
+  }
+
+  Future<String?> onRegister({
+    required String email,
+    required String password,
+  }) async {
+    final (authError, user) = await authRepository.register(email: email, password: password);
+    if (authError != null) {
+      return authError;
+    }
+    final (getUserError, chatUser) = await userRepository.create(
+      user?.uid ?? '',
+      ChatUser(
+        email: user?.email,
+        lastSeen: DateTime.now().millisecondsSinceEpoch,
+        uid: user?.uid,
+      ),
+    );
+    if (getUserError != null) {
+      return getUserError;
+    }
+    emit(
+      state.copyWith(
+        chatUser: chatUser,
+        loading: false,
+      ),
+    );
+    return null;
+  }
+
   Future<void> onLogout() async {}
 }

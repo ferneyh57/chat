@@ -33,7 +33,7 @@ class UserDataSource {
 
 class FirebaseDocumentHelper<T> {
   final DocumentSnapshot? snapshot;
-  final T data;
+  final T? data;
   FirebaseDocumentHelper({
     this.snapshot,
     required this.data,
