@@ -18,7 +18,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   get_it: ^7.6.7
-  intl: ^0.18.0
+  intl: any
   isar: ^3.1.0+1
   uuid: ^4.2.2
 

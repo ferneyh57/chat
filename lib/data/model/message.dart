@@ -11,6 +11,7 @@ class Message {
   final int date;
   final bool seen;
   final MessageType type;
+  final String conversationId;
   Message({
     required this.senderId,
     required this.receiverId,
@@ -19,6 +20,7 @@ class Message {
     this.seen = false,
     this.type = MessageType.text,
     required this.uid,
+    required this.conversationId,
   });
   factory Message.fromJson(Map<String, dynamic> json) => _$MessageFromJson(json);
   Map<String, dynamic> toJson() => _$MessageToJson(this);
@@ -31,6 +33,7 @@ class Message {
     int? date,
     bool? seen,
     MessageType? type,
+    String? conversationId,
   }) {
     return Message(
       uid: uid ?? this.uid,
@@ -40,6 +43,7 @@ class Message {
       date: date ?? this.date,
       seen: seen ?? this.seen,
       type: type ?? this.type,
+      conversationId: conversationId ?? this.conversationId,
     );
   }
 }

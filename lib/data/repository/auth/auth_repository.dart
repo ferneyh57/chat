@@ -7,21 +7,18 @@ import 'package:flutter/material.dart';
 
 class AuthRepository {
   final AuthDataSource authDataSource;
-  final UserDataSource userDataSource;
+
   AuthRepository({
     required this.authDataSource,
-    required this.userDataSource,
   });
 
-  Future<(String?, ChatUser?)> login({
+  Future<(String?, User?)> login({
     required String email,
     required String password,
   }) async {
     try {
       final authResponse = await authDataSource.signInWithEmailPassword(email: email, password: password);
-      final firestoreResponse = await userDataSource.getByUid(authResponse.user?.uid ?? '');
-      if (firestoreResponse == null) return ('We can not find your user', null);
-      return (null, firestoreResponse);
+      return (null, authResponse.user);
     } on FirebaseAuthException catch (e) {
       debugPrint('error at AuthRepository FirebaseAuthException: ${e.code}');
       return (e.message, null);
@@ -31,24 +28,14 @@ class AuthRepository {
     }
   }
 
-  Future<(String?, ChatUser?)> register({
+  Future<(String?, User?)> register({
     required String email,
     required String password,
   }) async {
     try {
       final authResponse =
           await authDataSource.createUserWithEmailAndPassword(email: email, password: password);
-      final user = authResponse.user;
-      final firestoreResponse = await userDataSource.create(
-        user?.uid ?? '',
-        ChatUser(
-          userName: user?.displayName,
-          email: user?.email,
-          lastSeen: DateTime.now().millisecondsSinceEpoch,
-        ),
-      );
-      if (firestoreResponse == null) return ('We can not find your user', null);
-      return (null, firestoreResponse);
+      return (null, authResponse.user);
     } on FirebaseAuthException catch (e) {
       debugPrint('error at AuthRepository FirebaseAuthException: $e');
       return (e.message, null);
